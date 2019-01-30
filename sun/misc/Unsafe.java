@@ -41,6 +41,10 @@ import sun.reflect.Reflection;
  * @see #getUnsafe
  */
 
+/**
+ *Unsafe类是在sun.misc包下，不属于Java标准。但是很多Java的基础类库，包括一些被广泛使用的高性能开发库都是基于Unsafe类开发的，
+ * 比如Netty、Cassandra、Hadoop、Kafka等。Unsafe类在提升Java运行效率，增强Java语言底层操作能力方面起了很大的作用。
+ */
 public final class Unsafe {
 
     private static native void registerNatives();

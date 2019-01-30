@@ -55,6 +55,12 @@ public class Reflection {
     /** Returns the class of the caller of the method calling this method,
         ignoring frames associated with java.lang.reflect.Method.invoke()
         and its implementation. */
+    /**
+     * Reflection的getCallerClass的使用：可以得到调用者的类.这个方法是很好用的.
+     *
+     * 方法提供的机制可用于确定调用者，从而实现“感知调用者（Caller Sensitive）”的行为，即根据调用类或调用栈中的其它类来调整其自身的行为。
+     * @return
+     */
     @CallerSensitive
     public static native Class<?> getCallerClass();
 

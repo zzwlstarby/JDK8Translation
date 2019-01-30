@@ -42,19 +42,31 @@ import sun.reflect.Reflection;
  */
 
 /**
- *Unsafe类是在sun.misc包下，不属于Java标准。但是很多Java的基础类库，包括一些被广泛使用的高性能开发库都是基于Unsafe类开发的，
+ * Unsafe类是在sun.misc包下，不属于Java标准。但是很多Java的基础类库，包括一些被广泛使用的高性能开发库都是基于Unsafe类开发的，
  * 比如Netty、Cassandra、Hadoop、Kafka等。Unsafe类在提升Java运行效率，增强Java语言底层操作能力方面起了很大的作用。
  */
 public final class Unsafe {
 
+    /**
+     * 对几个本地方法进行注册(也就是初始化java方法映射到C的方法)。
+     * 这里需要注意的是很多类里都有这个方法，但是执行的目标是不相同的
+     *
+     * 通常，为了让JVM找到你的本地函数，它们必须以某种方式命名。例如，java.lang.Object.registerNatives
+     * 对应的C函数被命名Java_java_lang_Object_registerNatives。通过使用registerNatives（或者说，JNI函数
+     * RegisterNatives），你可以任意指定你的C函数。
+     */
     private static native void registerNatives();
     static {
         registerNatives();
+
+        // 将getUnsafe加入到Reflection的过滤列表中 这个方法不能通过反射访问
         sun.reflect.Reflection.registerMethodsToFilter(Unsafe.class, "getUnsafe");
     }
-
+    // 私有的构造方法 不能通过new进行实例化
     private Unsafe() {}
 
+    // 类持有一个自身的实例 这就是我们获取此类实例的基础 通过反射窃取此实例
+    // 这种方式也是单例模式等限制实例化的常用手段
     private static final Unsafe theUnsafe = new Unsafe();
 
     /**
@@ -89,6 +101,9 @@ public final class Unsafe {
      */
     @CallerSensitive
     public static Unsafe getUnsafe() {
+        // 判断此方法的调用方有系统权限 基于调用者的类加载为null确定的
+        // 也就是只有被系统加载器加载类能访问 非受信代码调用会出现SecurityException
+        // 这也是获取Unsafe实例的一个方案：通过一个由系统加载的工具类调用这个方法返回实例
         Class<?> caller = Reflection.getCallerClass();
         if (!VM.isSystemDomainLoader(caller.getClassLoader()))
             throw new SecurityException("Unsafe");

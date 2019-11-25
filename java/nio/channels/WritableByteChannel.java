@@ -31,7 +31,7 @@ import java.nio.ByteBuffer;
 
 /**
  * A channel that can write bytes.
- *
+ *可以写入字节的通道。
  * <p> Only one write operation upon a writable channel may be in progress at
  * any given time.  If one thread initiates a write operation upon a channel
  * then any other thread that attempts to initiate another write operation will
@@ -39,7 +39,9 @@ import java.nio.ByteBuffer;
  * I/O operations may proceed concurrently with a write operation depends upon
  * the type of the channel. </p>
  *
- *
+ *在可写通道上只能同时进行一个写操作 在任何给定的时间。如果一个线程在通道上启动写操作
+ * 如果其他线程试图发起另一个写操作，则会直到第一个操作完成。
+ * 不管是不是其他种类的I/O操作可以与所依赖的写操作并发进行通道的类型
  * @author Mark Reinhold
  * @author JSR-51 Expert Group
  * @since 1.4
@@ -51,10 +53,12 @@ public interface WritableByteChannel
 
     /**
      * Writes a sequence of bytes to this channel from the given buffer.
+     * 从给定缓冲区中的字节序列写入此通道。
      *
      * <p> An attempt is made to write up to <i>r</i> bytes to the channel,
      * where <i>r</i> is the number of bytes remaining in the buffer, that is,
      * <tt>src.remaining()</tt>, at the moment this method is invoked.
+     *  尝试将r字节写到通道，其中r是缓冲区中剩余的字节数，就是说
      *
      * <p> Suppose that a byte sequence of length <i>n</i> is written, where
      * <tt>0</tt>&nbsp;<tt>&lt;=</tt>&nbsp;<i>n</i>&nbsp;<tt>&lt;=</tt>&nbsp;<i>r</i>.

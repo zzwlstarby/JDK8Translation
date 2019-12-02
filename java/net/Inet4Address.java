@@ -376,5 +376,6 @@ class Inet4Address extends InetAddress {
     /**
      * Perform class load-time initializations.
      */
+    //执行类加载时初始化
     private static native void init();
 }

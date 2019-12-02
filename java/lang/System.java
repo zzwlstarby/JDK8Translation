@@ -281,6 +281,11 @@ public final class System {
      * @see SecurityManager#checkPermission
      * @see java.lang.RuntimePermission
      */
+
+    /**
+     * 打开系统安全权限检查开关
+     * @param s
+     */
     public static
     void setSecurityManager(final SecurityManager s) {
         try {

@@ -40,6 +40,12 @@ import java.util.Map;
  * @author Edward Wang
  * @since 1.6
  */
+
+/**
+ * 表示cookie存储区的CookieStore对象。可以存储和获取cookie。CookieManager 将调用 CookieStore.add
+ * 为每个传入的 HTTP 响应保存 cookie，调用 CookieStore.get 为每个传出的 HTTP 请求获取 cookie。CookieStore
+ * 负责移除已过期的 HttpCookie 实例。
+ */
 public interface CookieStore {
     /**
      * Adds one HTTP cookie to the store. This is called for every

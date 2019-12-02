@@ -34,6 +34,11 @@ package java.net;
  * and {@link java.nio.channels.NetworkChannel#getOption(SocketOption) getOption}
  * methods to set and query the channel's socket options.
  *
+ * <p>在{@link java.nio.channels}包中，{@ link * java.nio.channels.NetworkChannel}接口定义了
+ * {@link * java.nio.channels.NetworkChannel＃setOption（SocketOption，Object ）setOption}
+ * 和{@link java.nio.channels.NetworkChannel＃getOption（SocketOption）getOption}
+ * 方法来设置和获取channel的套接字选项。
+ *
  * @param   <T>     The type of the socket option value.
  *
  * @since 1.7
@@ -41,18 +46,23 @@ package java.net;
  * @see StandardSocketOptions
  */
 
+
+/**
+ * 与套接字关联的套接字选项 元对象，此对象可以表示socket 编程的每个选项值
+ * @param <T>
+ */
 public interface SocketOption<T> {
 
     /**
      * Returns the name of the socket option.
-     *
+     * 返回套接字选项的名称。
      * @return the name of the socket option
      */
     String name();
 
     /**
      * Returns the type of the socket option value.
-     *
+     * 返回套接字选项值的类型
      * @return the type of the socket option value
      */
     Class<T> type();

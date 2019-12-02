@@ -40,6 +40,10 @@ import java.security.AccessController;
  *
  * @since 1.4
  */
+
+/**
+ * 此类表示由名称，和分配给该接口的IP地址列表组成的网络接口。用于标识加入多播组*的本地接口。
+ */
 public final class NetworkInterface {
     private String name;
     private String displayName;

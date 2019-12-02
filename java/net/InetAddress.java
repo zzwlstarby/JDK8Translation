@@ -185,38 +185,57 @@ import sun.net.spi.nameservice.*;
  * @see     java.net.InetAddress#getLocalHost()
  * @since JDK1.0
  */
+
+/**
+ * 表示互联网协议 (IP) 地址
+ */
 public
 class InetAddress implements java.io.Serializable {
+    public static void main(String[] args) {
+        System.out.println("test");
+    }
     /**
      * Specify the address family: Internet Protocol, Version 4
      * @since 1.4
      */
+    //指定地址族：Internet协议，版本4
     static final int IPv4 = 1;
 
     /**
      * Specify the address family: Internet Protocol, Version 6
      * @since 1.4
      */
+    //指定地址族：Internet协议，版本6
     static final int IPv6 = 2;
 
     /* Specify address family preference */
+    //指定地址族的偏好
     static transient boolean preferIPv6Address = false;
 
+
+    //用于存储InetAddress的可序列化字段
     static class InetAddressHolder {
         /**
          * Reserve the original application specified hostname.
+         *保留原始应用程序指定的主机名。
+         *
          *
          * The original hostname is useful for domain-based endpoint
          * identification (see RFC 2818 and RFC 6125).  If an address
          * was created with a raw IP address, a reverse name lookup
          * may introduce endpoint identification security issue via
          * DNS forging.
+         * 原始主机名可用于基于域的端点标识（请参阅RFC 2818和RFC 6125）。
+         * 如果使用原始IP地址创建了地址，则反向名称查找可能会通过DNS伪造引入端点标识安全性问题。
          *
          * Oracle JSSE provider is using this original hostname, via
          * sun.misc.JavaNetAccess, for SSL/TLS endpoint identification.
-         *
+         *Oracle JSSE提供程序正在使用此原始主机名，通过* sun.misc.JavaNetAccess来进行SSL / TLS端点标识。
+
          * Note: May define a new public method in the future if necessary.
+         * 注意：如有必要，将来可以定义新的公共方法
          */
+
         String originalHostName;
 
         InetAddressHolder() {}
@@ -249,6 +268,7 @@ class InetAddress implements java.io.Serializable {
         /**
          * Holds a 32-bit IPv4 address.
          */
+        //保存一个32位的IPv4地址
         int address;
 
         int getAddress() {
@@ -259,6 +279,7 @@ class InetAddress implements java.io.Serializable {
          * Specifies the address family type, for instance, '1' for IPv4
          * addresses, and '2' for IPv6 addresses.
          */
+        //指定地址族类型，例如，对于IPv4 地址为'1'，对于IPv6地址为'2'
         int family;
 
         int getFamily() {
@@ -267,6 +288,7 @@ class InetAddress implements java.io.Serializable {
     }
 
     /* Used to store the serializable fields of InetAddress */
+    //用于存储InetAddress的可序列化字段
     final transient InetAddressHolder holder;
 
     InetAddressHolder holder() {
@@ -274,9 +296,11 @@ class InetAddress implements java.io.Serializable {
     }
 
     /* Used to store the name service provider */
+    //用于存储名称服务提供商
     private static List<NameService> nameServices = null;
 
     /* Used to store the best available hostname */
+    //用于存储最佳可用主机名
     private transient String canonicalHostName = null;
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
@@ -284,7 +308,9 @@ class InetAddress implements java.io.Serializable {
 
     /*
      * Load net library into runtime, and perform initializations.
+     *
      */
+    //将网络库加载到运行时，并执行初始化。
     static {
         preferIPv6Address = java.security.AccessController.doPrivileged(
             new GetBooleanAction("java.net.preferIPv6Addresses")).booleanValue();
@@ -310,9 +336,10 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Replaces the de-serialized object with an Inet4Address object.
+     * 用Inet4Address对象替换反序列化的对象
      *
      * @return the alternate object to the de-serialized object.
-     *
+     * 反序列化对象的替代对象
      * @throws ObjectStreamException if a new object replacing this
      * object could not be created
      */
@@ -324,6 +351,7 @@ class InetAddress implements java.io.Serializable {
     /**
      * Utility routine to check if the InetAddress is an
      * IP multicast address.
+     * 该实用程序例程，用于检查InetAddress是否为IP多播地址
      * @return a {@code boolean} indicating if the InetAddress is
      * an IP multicast address
      * @since   JDK1.1
@@ -334,6 +362,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Utility routine to check if the InetAddress in a wildcard address.
+     * 实用程序例程，用于检查InetAddress是否在通配符地址中。
      * @return a {@code boolean} indicating if the Inetaddress is
      *         a wildcard address.
      * @since 1.4
@@ -344,7 +373,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Utility routine to check if the InetAddress is a loopback address.
-     *
+     *用来检查InetAddress是否为回环地址的实用程序
      * @return a {@code boolean} indicating if the InetAddress is
      * a loopback address; or false otherwise.
      * @since 1.4
@@ -355,7 +384,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Utility routine to check if the InetAddress is an link local address.
-     *
+     *该实用程序例程，用于检查InetAddress是否为链接本地地址。
      * @return a {@code boolean} indicating if the InetAddress is
      * a link local address; or false if address is not a link local unicast address.
      * @since 1.4
@@ -366,7 +395,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Utility routine to check if the InetAddress is a site local address.
-     *
+     *该实用程序例程，用于检查InetAddress是否为站点本地地址
      * @return a {@code boolean} indicating if the InetAddress is
      * a site local address; or false if address is not a site local unicast address.
      * @since 1.4
@@ -377,7 +406,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Utility routine to check if the multicast address has global scope.
-     *
+     *用来检查多播地址是否具有全局作用域的实用程序例程
      * @return a {@code boolean} indicating if the address has
      *         is a multicast address of global scope, false if it is not
      *         of global scope or it is not a multicast address
@@ -442,15 +471,20 @@ class InetAddress implements java.io.Serializable {
      * implementation to try to reach the host, but firewalls and server
      * configuration may block requests resulting in a unreachable status
      * while some specific ports may be accessible.
+     * 测试该地址是否可访问。实施会尽最大努力尝试到达主机，但是防火墙和服务器的配置可能会阻止请求，
+     * 从而导致无法访问状态，而某些特定端口可能可以访问。
      * A typical implementation will use ICMP ECHO REQUESTs if the
      * privilege can be obtained, otherwise it will try to establish
      * a TCP connection on port 7 (Echo) of the destination host.
+     * 如果可以获得*特权，则典型的实现将使用ICMP ECHO REQUEST，否则它将尝试在目标主机的端口7（回显）
+     * 上建立TCP连接。
      * <p>
      * The timeout value, in milliseconds, indicates the maximum amount of time
      * the try should take. If the operation times out before getting an
      * answer, the host is deemed unreachable. A negative value will result
      * in an IllegalArgumentException being thrown.
-     *
+     * 超时值（以毫秒为单位）表示尝试*花费的最长时间。如果操作在获得*答案之前超时，则认为主机不可访问。
+     * 负值将导致*引发IllegalArgumentException。
      * @param   timeout the time, in milliseconds, before the call aborts
      * @return a {@code boolean} indicating if the address is reachable.
      * @throws IOException if a network error occurs
@@ -504,6 +538,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Gets the host name for this IP address.
+     * 获取此IP地址的主机名
      *
      * <p>If this InetAddress was created with a host name,
      * this host name will be remembered and returned;
@@ -513,12 +548,19 @@ class InetAddress implements java.io.Serializable {
      * is required, call
      * {@link #getCanonicalHostName() getCanonicalHostName}.
      *
+     * 如果此InetAddress是使用主机名创建的，则该主机名将被记住并返回；
+     * 否则，将执行反向名称查找并将基于系统配置的名称查找服务返回结果。如果需要查找名称服务，
+     * 请调用getCanonicalHostName方法
      * <p>If there is a security manager, its
      * {@code checkConnect} method is first called
      * with the hostname and {@code -1}
      * as its arguments to see if the operation is allowed.
      * If the operation is not allowed, it will return
      * the textual representation of the IP address.
+     *
+     * 如果有安全管理器，则首先使用主机名和{@code -1} *作为其参数来调用其
+     * {@code checkConnect}方法，以查看是否允许该操作。 *如果不允许该操作，
+     * 它将返回IP地址的文本表示形式。
      *
      * @return  the host name for this IP address, or if the operation
      *    is not allowed by the security check, the textual
@@ -592,6 +634,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Returns the hostname for this address.
+     * 返回此地址的主机名
      *
      * <p>If there is a security manager, this method first
      * calls its {@code checkConnect} method
@@ -600,6 +643,9 @@ class InetAddress implements java.io.Serializable {
      * the hostname for this IP address, i.e., to connect to the host.
      * If the operation is not allowed, it will return
      * the textual representation of the IP address.
+     *
+     * 如果有一个安全管理器，则此方法首先*调用其{@code checkConnect}方法*以主机名和{@code -1}
+     * *作为其参数，以查看是否允许调用代码知道*该IP的主机名地址，即连接到主机。 *如果不允许该操作，它将返回* IP地址的文本表示形式。
      *
      * @return  the host name for this IP address, or if the operation
      *    is not allowed by the security check, the textual
@@ -619,6 +665,7 @@ class InetAddress implements java.io.Serializable {
                 /* check to see if calling code is allowed to know
                  * the hostname for this IP address, ie, connect to the host
                  */
+                //检查是否允许调用代码知道此IP地址的主机名，即连接到主机
                 if (check) {
                     SecurityManager sec = System.getSecurityManager();
                     if (sec != null) {
@@ -665,6 +712,10 @@ class InetAddress implements java.io.Serializable {
      * object. The result is in network byte order: the highest order
      * byte of the address is in {@code getAddress()[0]}.
      *
+     * 返回此{@code InetAddress} *对象的原始IP地址。结果以网络字节顺序：
+     * 地址的最高位*字节在{@code getAddress（）[0]}中
+     * 返回ip地址的二进制字节数组
+     *
      * @return  the raw IP address of this object.
      */
     public byte[] getAddress() {
@@ -673,7 +724,7 @@ class InetAddress implements java.io.Serializable {
 
     /**
      * Returns the IP address string in textual presentation.
-     *
+     *以文本形式返回IP地址字符串
      * @return  the raw IP address in a string format.
      * @since   JDK1.0.2
      */

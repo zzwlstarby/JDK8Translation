@@ -38,6 +38,13 @@ package java.net;
  * @see     java.net.URLStreamHandler
  * @since   JDK1.0
  */
+
+/**
+ * ContentHandlerFactory类无引入包和继承类
+ * 该接口声明了内容处理程序工厂
+ * 此接口的实现应该将 MIME 类型映射到 ContentHandler 的实例中。
+ * URLStreamHandler 类使用此接口创建 MIME 类型的 ContentHandler。
+ */
 public interface ContentHandlerFactory {
     /**
      * Creates a new {@code ContentHandler} to read an object from
@@ -49,6 +56,12 @@ public interface ContentHandlerFactory {
      *          {@code URLStreamHandler}.
      * @see     java.net.ContentHandler
      * @see     java.net.URLStreamHandler
+     */
+
+    /**
+     * 创建新的ContentHandler类从URLStreamHandler中读取实例
+     * @param mimetype
+     * @return
      */
     ContentHandler createContentHandler(String mimetype);
 }

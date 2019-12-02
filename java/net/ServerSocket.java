@@ -354,6 +354,29 @@ class ServerSocket implements java.io.Closeable {
      *          SocketAddress subclass not supported by this socket
      * @since 1.4
      */
+    /**
+     * TCP 缓存(TCP Backlog) 通常情况下，操作系统会使用一块限定的内存来处理 TCP 连接请求。每当用户端发送的 SYN 标志置位
+     * 连接请求到服务端的一个合法端口(提供 TCP 服务的一端监听该端口)时，处 理所有连接请求的内存使用量必须进行限定。如果不
+     * 进行限定，系统会因处理大量的 TCP 连接请求而耗尽内存，这在某种程度上可以说是一种简单的 DoS 攻击。这块经过限定的，
+     * 用于处理 TCP 连接的内存称为 TCP 缓存(TCP Backlog)，它实际上是用于处理进站(inbound)
+     *
+     * 连接请求的一个队列。该队列保存那些处于半开放(half-open)状态的 TCP 连接项目，和已建 立完整连接但仍未由应用程序通过
+     * accept()调用提取的项目。如果这个缓存队列被填满，除 非可以及时处理队列中的项目，否则任何其它新的 TCP 连接请求会被丢弃。
+     * 一般情况下，该缓存队列的容量很小。原因很简单，在正常的情况下 TCP 可以很好的处 理连接请求。 如果当缓存队列填满的时候新的
+     * 客户端连接请求被丢弃， 客户端只需要简单的 重新发送连接请求，服务端有时间清空缓存队列以相应新的连接请求。 在现实环境中，
+     * 不同操作系统支持 TCP 缓冲队列有所不同。
+     * backlog 指定了内核为此套接口排队的最大连接 个数，对于给定在监听 套接口，内核要维护两个对列，未链接
+     * 队列和已连接队列，根据TCP三路握手过程 中三个分节来分隔这两个队列。服务器处于listen状态时收到客户端syn分节(connect)时在
+     * 未完成队列 中创建一个新在条目，然后用三路握手的第二个分节几服务器在syn响应阴对客户端syn的ack，此条目用第三个分节到达前
+     * （客户端对服务器syn在ack） 一直保留在未完成连接 列队中如果三路握手完成，该将从未完成队列搬到已完成队列 尾部。当进程调用
+     * accept时，从已完成队列 中在头部取出一个条目给进程，当已完成队列为空时进程 将睡眠，直到有条目 在已完成连接列队中才唤醒。
+     * backlog 被规定为两二个队列总和在最大值，大多数实现 默认值为5,但在高并发web服务器中此值显然 不够，lighttpd中此值 达到128*8.
+     * 需要风轻云淡此值更大一此在原因是未完成连接发队列 在长度可能因为客户端syn的到达及等待三路招手第三个分节在到达延时而增大。
+     * netty 默认100
+     * @param endpoint
+     * @param backlog
+     * @throws IOException
+     */
     public void bind(SocketAddress endpoint, int backlog) throws IOException {
         if (isClosed())
             throw new SocketException("Socket is closed");

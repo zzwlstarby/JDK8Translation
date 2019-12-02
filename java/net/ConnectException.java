@@ -33,6 +33,11 @@ package java.net;
  *
  * @since   JDK1.1
  */
+
+/**
+ * *表示尝试将套接字连接到远程地址和端口时发生错误。通常，连接被远程拒绝
+ * （例如，没有进程在远程地址/端口上监听）。
+ */
 public class ConnectException extends SocketException {
     private static final long serialVersionUID = 3831404271622369215L;
 

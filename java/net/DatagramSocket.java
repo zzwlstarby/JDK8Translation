@@ -63,6 +63,14 @@ import java.security.PrivilegedExceptionAction;
  * @see     java.nio.channels.DatagramChannel
  * @since JDK1.0
  */
+
+/**
+ * 1.此类表示用来发送和接收数据报包的套接字。
+ * 在程序中需要实现通信只有DatagramPacket数据包也同样不行，为此JDK中提供的一个DatagramSocket类。
+ * DatagramSocket类的作用就类似于码头，使用这个类的实例对象就可以发送和接收DatagramPacket数据包
+ * 2.数据报套接字是包投递服务的发送或接收点。每个在数据报套接字上发送或接收的包都是单独编址和路由的。
+ * 从一台机器发送到另一台机器的多个包可能选择不同的路由，也可能按不同的顺序到达
+ */
 public
 class DatagramSocket implements java.io.Closeable {
     /**
@@ -267,6 +275,8 @@ class DatagramSocket implements java.io.Closeable {
      *
      * @see SecurityManager#checkListen
      */
+    //该构造方法既可用于创建接收端的DatagramSocket对象，又可以创建发送端的DatagramSocket对象，
+    // 在创建接收端的DatagramSocket对象时，必须要指定一个端口号，这样就可以监听指定的端口。
     public DatagramSocket(int port) throws SocketException {
         this(port, null);
     }
@@ -651,6 +661,11 @@ class DatagramSocket implements java.io.Closeable {
      * @revised 1.4
      * @spec JSR-51
      */
+    /**
+     * 从此套接字发送数据包
+     * @param p
+     * @throws IOException
+     */
     public void send(DatagramPacket p) throws IOException  {
         InetAddress packetAddress = null;
         synchronized (p) {
@@ -724,6 +739,11 @@ class DatagramSocket implements java.io.Closeable {
      * @see        java.net.DatagramSocket
      * @revised 1.4
      * @spec JSR-51
+     */
+    /**
+     * 从此套接字接受数据包
+     * @param p
+     * @throws IOException
      */
     public synchronized void receive(DatagramPacket p) throws IOException {
         synchronized (p) {

@@ -33,6 +33,10 @@ package java.net;
  * @since   JDK1.1
  */
 
+/**
+ * 表示尝试将套接字绑定到本地地址和端口时发生错误。通常，端口正在使用*，
+ * 或者无法分配请求的本地地址。
+ */
 public class BindException extends SocketException {
     private static final long serialVersionUID = -5945005768251722951L;
 

@@ -45,6 +45,14 @@ import java.nio.ByteBuffer;
  * @since 1.4
  */
 
+/**
+ * 可以读取字节的通道
+ *
+ * 1.如果一个Channel类实现了ReadableByteChannel接口，则表示其是可读的，可以调用read()方法读取；
+ * 2.在可读的通道中，一个进程只能有一个读操作。如果当前线程正在读通道，其他尝试
+ *  读通道的线程，必须等待正在读痛的线程完成。
+ * 3.在任何给定时间，可能只在可读通道上进行一次读取操作。如果一个线程在通道上启动了读取操作*，那么其他任何尝试启动另一个读取操作的线程将*阻塞，直到第一个操作完成。其他类型的I / O操作是否可以与读取操作同时进行取决于通道的类型
+ */
 public interface ReadableByteChannel extends Channel {
 
     /**
@@ -103,6 +111,25 @@ public interface ReadableByteChannel extends Channel {
      * @throws  IOException
      *          If some other I/O error occurs
      */
+
+    /**
+     * 返回读取的字节数，可能为零，如果通道已到达流末尾，则为 -1
+     *
+     * 1.从通道中读取字节序列，写到缓存中，即从通道中读取数据到缓冲区中。
+     * 2.只能读取缓冲剩余空间容量的字节序列到缓存。
+     * 3.一个读操作也许不能填充缓存，实际也许没有读取任何字节。是否能够填充和读取字节，
+     *      依赖于通道的状态。一个非阻塞的通道不能读取大于socket输入缓冲区容量的字节数；相似地，
+     *      一个文件通道不能读取大于文件字节大小的字节。如果通道为阻塞模式，则至少有一个字节在通道的socket
+     *      输入缓存区中可用，如果没有read方法阻塞到至少有一个字节可用。
+     *
+     * 4.此方法可以在任何时候调用。如果其他线程已经执行一个读操作，则当前读操作阻塞到其他
+     *      线程执行完读操作。
+     *
+     * @param dst
+     * @return
+     * @throws IOException
+     */
+
     public int read(ByteBuffer dst) throws IOException;
 
 }

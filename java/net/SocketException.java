@@ -29,7 +29,7 @@ import java.io.IOException;
 
 /**
  * Thrown to indicate that there is an error creating or accessing a Socket.
- *
+ *抛出该错误以指示创建或访问Socket时出错
  * @author  Jonathan Payne
  * @since   JDK1.0
  */

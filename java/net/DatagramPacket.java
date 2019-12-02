@@ -39,11 +39,22 @@ package java.net;
  * @author  Benjamin Renaud
  * @since   JDK1.0
  */
+
+/**
+ * todo
+ * 1.User Datagram Protocol用户数据包协议，不保证顺序到达
+ * 2.该类的实例对象就相当于一个集装箱，用于封装UDP通信中发送或者接收的数据。
+ * 3.此类表示数据报包。
+ *  数据报包用来实现无连接包投递服务。每条报文仅根据该包中包含的信息从一台机器路由到另一台机器。
+ */
 public final
 class DatagramPacket {
 
     /**
      * Perform class initialization
+     */
+    /**
+     *让程序突破当前域权限限制，临时扩大访问权限
      */
     static {
         java.security.AccessController.doPrivileged(
@@ -115,6 +126,17 @@ class DatagramPacket {
      * @see java.net.InetAddress
      *
      * @since 1.2
+     */
+    /**
+     * todo
+     * 1.使用该构造方法在创建DatagramPacket对象时，不仅指定了封装数据的字节数组和数据的大小，还指定了数据包的目标IP地址（addr）和端口号（port）。
+     * 该对象通常用于发送端，因为在发送数据时必须指定接收端的IP地址和端口号，就好像发送货物的集装箱上面必须标明接收人的地址一样。
+     * 2.InetAddress是对ip地址的封装
+     * @param buf
+     * @param offset
+     * @param length
+     * @param address
+     * @param port
      */
     public DatagramPacket(byte buf[], int offset, int length,
                           InetAddress address, int port) {

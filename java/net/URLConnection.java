@@ -157,6 +157,16 @@ import sun.net.www.MessageHeader;
  * @see     java.net.URLConnection#setUseCaches(boolean)
  * @since   JDK1.0
  */
+
+
+/**
+ * 1.用于读取和写入此 URL 引用的资源。
+ * 2.使用步骤:
+ *   通过在 URL 上调用 openConnection 方法创建连接对象。
+ *   处理设置参数和一般请求属性。
+ *   使用 connect 方法建立到远程对象的实际连接。
+ *   远程对象变为可用。远程对象的头字段和内容变为可访问。
+ */
 public abstract class URLConnection {
 
    /**

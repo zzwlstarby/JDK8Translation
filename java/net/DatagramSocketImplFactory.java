@@ -34,6 +34,10 @@ package java.net;
  * @see     java.net.DatagramSocket
  * @since   1.3
  */
+
+/**
+ * 接口定义用于数据报套接字实现的工厂。DatagramSocket类使用它来创建实际的套接字实现
+ */
 public
 interface DatagramSocketImplFactory {
     /**

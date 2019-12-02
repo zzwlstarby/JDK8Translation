@@ -39,9 +39,16 @@ import java.nio.ByteBuffer;
  * I/O operations may proceed concurrently with a write operation depends upon
  * the type of the channel. </p>
  *
- *在可写通道上只能同时进行一个写操作 在任何给定的时间。如果一个线程在通道上启动写操作
+ * 从缓冲区中写数据到通道中
+ *
+ * 1.在可写通道上只能同时进行一个写操作 在任何给定的时间。如果一个线程在通道上启动写操作
  * 如果其他线程试图发起另一个写操作，则会直到第一个操作完成。
  * 不管是不是其他种类的I/O操作可以与所依赖的写操作并发进行通道的类型
+ *
+ * 2.如果一个Channel类实现了WritableByteChannel接口，则表示其是可写的，可以调用write()方法写入；
+ *
+ * 3.如果一个Channel类同时实现了ReadableByteChannel接口和WritableByteChannel接口则为双向通道，如果只实现其中一个，则为单向通道；
+ * 如ByteChannel就是一个双向通道，实际上ByteChannel接口本身并不定义新的API方法，它是一个聚集了所继承的多个接口，并重新命名的便捷接口；
  * @author Mark Reinhold
  * @author JSR-51 Expert Group
  * @since 1.4
@@ -103,6 +110,13 @@ public interface WritableByteChannel
      *
      * @throws  IOException
      *          If some other I/O error occurs
+     */
+
+    /**
+     * 从指定的缓冲区中写数据到通道中
+     * @param src
+     * @return
+     * @throws IOException
      */
     public int write(ByteBuffer src) throws IOException;
 

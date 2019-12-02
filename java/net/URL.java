@@ -137,6 +137,11 @@ import sun.security.util.SecurityConstants;
  * @author  James Gosling
  * @since JDK1.0
  */
+
+/**
+ * 代表一个统一资源定位符，它是指向互联网“资源”的指针。
+ * 资源可以是简单的文件或目录，也可以是对更为复杂的对象的引用，例如对数据库或搜索引擎的查询。
+ */
 public final class URL implements java.io.Serializable {
 
     static final String BUILTIN_HANDLERS_PREFIX = "sun.net.www.protocol";

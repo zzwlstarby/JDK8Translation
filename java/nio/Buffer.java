@@ -172,6 +172,104 @@ import java.util.Spliterator;
  * @since 1.4
  */
 
+/**
+ * 值得注意的是Buffer及其子类都不是线程安全的。
+ *
+ * 1.Java NIO中的Buffer用于和NIO通道进行交互。数据是从通道读入缓冲区，从缓冲区写入到通道中的。
+ *
+ * 2.缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。
+ * 为了理解Buffer的工作原理，需要熟悉它的三个属性:
+ * capacity:
+ * .position
+ * .limit
+ * position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。
+ *
+ * capacity:作为一个内存块，Buffer有一个固定的大小值，也叫"capacity"。你只能往里写capacity个byte、long，char等类型。
+ * 一旦Buffer满了，需要将其清空（通过读数据或者清除数据）才能继续写数据往里写数据。
+ *
+ * position
+ * 当你写数据到Buffer中时，position表示当前的位置。初始的position值为0。
+ * 当一个byte、long等数据写到Buffer后，position会向前移动到下一个可插入数据的Buffer单元。
+ * position最大可为capacity –1当读取数据时，也是从某个特定位置读。
+ *
+ * 当将Buffer从写模式切换到读模式，position会被重置为0。当从Buffer的position处读取数据时，
+ * position向前移动到下一个可读的位置。
+ *
+ *
+ * limit
+ * 在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。写模式下，limit等于Buffer的capacity。
+ * 当切换Buffer到读模式时，limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。
+ * 换句话说，你能读到之前写入的所有数据，即limit被设置成已写数据的数量，这个值在写模式下就是position。
+ *
+ *
+ *
+ *
+ *
+ * 3.使用Buffer读写数据一般遵循以下四个步骤：
+ * 1）写入数据到Buffer，一般有可以从Channel读取到到缓冲区中，也可以调用put方法写入。
+ *
+ * 2）调用flip()方法，切换数据模式。
+ * flip方法将Buffer从写模式切换到读模式。调用flip()方法会将position设回0，并将limit设置成之前position的值。
+ * 换句话说，position现在用于标记读的位置，limit表示之前写进了多少个byte、char等现在能读取多少个byte、char等。
+ *
+ *
+ *
+ *
+ * 3）从Buffer中读取数据，一般从缓冲区读取数据写入到通道中，也可以调用get方法读取。
+ *
+ * 4）调用clear()方法或者compact()方法清空缓冲区。
+ *
+ * 当向buffer写入数据时，buffer会记录下写了多少数据。一旦要读取数据，需要通过flip()方法将Buffer从写模式切换到读模式。
+ *
+ * 在读模式下，可以读取之前写入到buffer的所有数据。一旦读完了所有的数据，就需要清空缓冲区，让它可以再次被写入。
+ *
+ * 有两种方式能清空缓冲区：
+ * 1）clear()方法会清空整个缓冲区。
+ *
+ * 2）compact()方法只会清除已经读过的数据。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区
+ *
+ *
+ * 写数据到Buffer有两种方式:
+ * 1）从Channel写到Buffer。
+ * 2）通过Buffer的put()方法写到Buffer里。
+ * 从Channel写到Buffer的例子:
+ * int bytesRead = inChannel.read(buf); // 从Channel(通道)读取到Buffer(缓冲区)中
+ *
+ * 通过put方法写Buffer的例子:
+ * buf.put(127);
+ * put方法有很多版本，允许你以不同的方式把数据写入到Buffer中。
+ * 例如，写到一个指定的位置，或者把一个字节数组写入到Buffer。
+ *
+ * 从Buffer中读取数据有两种方式:
+ * 1）从Buffer读取数据到Channel。
+ *
+ * 2）使用get()方法从Buffer中读取数据。
+ *
+ * 从Buffer读取数据到Channel的例子:
+ * // 从Buffer中读取数据写入到通道中
+ * int bytesWritten = inChannel.write(buf);
+ *
+ * 使用get()方法从Buffer中读取数据的例子:
+ * byte aByte = buf.get();
+ * get方法有很多版本，允许你以不同的方式从Buffer中读取数据。
+ * 例如，从指定position读取，或者从Buffer中读取数据到字节数组。
+ *
+ *
+ * 一旦读完Buffer中的数据，需要让Buffer准备好再次被写入。可以通过clear()或compact()方法来完成。
+ * 如果调用的是clear()方法，position将被设回0，limit被设置成capacity的值。换句话说，Buffer被清空了。
+ * Buffer中的数据并未清除，只是这些标记告诉我们可以从哪里开始往Buffer里写数据。如果Buffer中有一些未读的数据，
+ * 调用clear()方法，数据将“被遗忘”，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。
+ *
+ *
+ * 如果Buffer中仍有未读的数据，且后续还需要这些数据，但是此时想要先写些数据，那么使用compact()方法。
+ * compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。
+ * limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。
+ *
+ *
+ *
+ *
+ *
+ */
 public abstract class Buffer {
 
     /**
@@ -182,9 +280,16 @@ public abstract class Buffer {
         Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.ORDERED;
 
     // Invariants: mark <= position <= limit <= capacity
-    private int mark = -1;
+
+    //一个临时存放的位置下标。调用mark()会将mark设为当前的position的值，
+    // 以后调用reset()会将position属性设置为mark的值。mark的值总是小于等于position的值，
+    // 如果将position的值设的比mark小，当前的mark值会被抛弃掉。这些属性总是满足以下条件：
+    private int mark = -1;//标记位置，reset时需要
+    //读/写操作的当前下标。当使用buffer的相对位置进行读/写操作时，读/写会从这个下标进行，并在操作完成后，buffer会更新下标的值。
     private int position = 0;
+    //在Buffer上进行的读写操作都不能越过这个下标。当写数据到buffer中时，limit一般和capacity相等，当读数据时，limit代表buffer中有效数据的长度。
     private int limit;
+    //这个Buffer最多能放多少数据。capacity一般在buffer被创建的时候指定。
     private int capacity;
 
     // Used only by direct buffers
@@ -284,6 +389,16 @@ public abstract class Buffer {
      *
      * @return  This buffer
      */
+
+    /**
+     * 通过调用Buffer.mark()方法，可以标记Buffer中的一个特定position。
+     *之后可以通过调用Buffer.reset()方法恢复到这个position。例如：
+     * buffer.mark();
+     * //调用buffer读写方法，下面通过调用reset恢复到调用前的position位置。
+     *buffer.reset(); // set position back to mark
+     *
+     * @return
+     */
     public final Buffer mark() {
         mark = position;
         return this;
@@ -325,6 +440,10 @@ public abstract class Buffer {
      *
      * @return  This buffer
      */
+    /**
+     * 把position设为0，把limit设为capacity，一般在把数据写入Buffer前调用。
+     * @return
+     */
     public final Buffer clear() {
         position = 0;
         limit = capacity;
@@ -353,6 +472,18 @@ public abstract class Buffer {
      *
      * @return  This buffer
      */
+
+    /**
+     * 1把limit设为当前position，把position设为0，一般在从Buffer读出数据前调用。
+     *
+     * buffer中的flip方法涉及到bufer中的Capacity,Position和Limit三个概念。其中Capacity在读写模式下都是固定的，就是我们分配的缓冲大小,
+     * Position类似于读写指针，表示当前读(写)到什么位置,Limit在写模式下表示最多能写入多少数据，此时和Capacity相同，
+     * 在读模式下表示最多能读多少数据，此时和缓存中的实际数据大小相同。
+     * 在写模式下调用flip方法，那么limit就设置为了position当前的值(即当前写了多少数据),postion会被置为0，
+     * 以表示读操作从缓存的头开始读。也就是说调用flip之后，读写指针指到缓存头部，并且设置了最多只能读出之前写入的数据长度
+     * (而不是整个缓存的容量大小)。
+     * @return
+     */
     public final Buffer flip() {
         limit = position;
         position = 0;
@@ -374,6 +505,17 @@ public abstract class Buffer {
      * buf.get(array);    // Copy data into array</pre></blockquote>
      *
      * @return  This buffer
+     */
+
+    /**
+     * 1.把position设为0，limit不变，一般在把数据重写入Buffer前调用。
+     *
+     * Buffer对象有可能是只读的，这时，任何对该对象的写操作都会触发一个ReadOnlyBufferException。
+     * isReadOnly()方法可以用来判断一个Buffer是否只读
+     *
+     * Buffer.rewind()将position设回0，所以你可以重读Buffer中的所有数据。
+     * limit保持不变，仍然表示能从Buffer中读取多少个元素（byte、char等）。
+     * @return
      */
     public final Buffer rewind() {
         position = 0;

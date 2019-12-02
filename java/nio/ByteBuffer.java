@@ -259,6 +259,10 @@ package java.nio;
  * @since 1.4
  */
 
+/**
+ *1. ByteBuffer底层的存储结构就是数组，所有的操作都是基于数组的操作。数组有哪几个重要的属性呢？元素索引和数组长度。
+ *
+ */
 public abstract class ByteBuffer
     extends Buffer
     implements Comparable<ByteBuffer>
@@ -307,6 +311,11 @@ public abstract class ByteBuffer
      * @throws  IllegalArgumentException
      *          If the <tt>capacity</tt> is a negative integer
      */
+    /**
+     * 分配一个新的指定大小的堆外内存缓冲区,这样的ByteBuffer在参与IO操作时性能会更好
+     * @param capacity
+     * @return
+     */
     public static ByteBuffer allocateDirect(int capacity) {
         return new DirectByteBuffer(capacity);
     }
@@ -328,6 +337,11 @@ public abstract class ByteBuffer
      *
      * @throws  IllegalArgumentException
      *          If the <tt>capacity</tt> is a negative integer
+     */
+    /**
+     * 分配一个新的指定大小的堆内存字节缓冲区
+     * @param capacity
+     * @return
      */
     public static ByteBuffer allocate(int capacity) {
         if (capacity < 0)

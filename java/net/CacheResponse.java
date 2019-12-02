@@ -39,6 +39,19 @@ import java.io.IOException;
  * @author Yingxian Wang
  * @since 1.5
  */
+
+/**
+ * 相当于从ResponseCache中取回资源的途径
+ *
+ * 该类的实例会提供一个输入流并且完整返回该输入流
+ *
+ * 并且也会提供getHeaders方法
+ *
+ * 该方法会返回相关的响应头
+ *
+ * CacheRequest 和CacheResponse这两个类都是针对缓存操作的，本身说明中和应用和网络操作关系不大（当然可以用在网络上，只是在任何方面都可以用得上，感觉封到IO里可能好些），
+ * 不是很懂为什么要封在net包。该类主要是对高速缓存的资源管理。
+ */
 public abstract class CacheResponse {
 
     /**
@@ -50,6 +63,11 @@ public abstract class CacheResponse {
      * @throws IOException if an I/O error occurs
      *            while getting the response headers
      */
+    /**
+     * 以map方式返回响应头
+     * @return
+     * @throws IOException
+     */
     public abstract Map<String, List<String>> getHeaders() throws IOException;
 
     /**
@@ -59,6 +77,11 @@ public abstract class CacheResponse {
      *         be accessed
      * @throws IOException if an I/O error occurs while
      *         getting the response body
+     */
+    /**
+     * 返回从缓存输入的输入流
+     * @return
+     * @throws IOException
      */
     public abstract InputStream getBody() throws IOException;
 }

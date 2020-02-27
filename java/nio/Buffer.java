@@ -266,7 +266,20 @@ import java.util.Spliterator;
  * limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。
  *
  *
+ *Buffer就是一个缓冲区，它是用户读写操作与Channel之间的桥梁，用户读数据只能从Channel读到Buffer，然后再从Buffer通
+ * 过get()读取。写数据也是一样，用户只能先把数据通过put()方法写到Buffer，然后再从Buffer写入到Channel。
+ * Buffer实质上是一个数组，既然是一个数组那么在使用Buffer之前，就需要给Buffer分配内存空间：
+ * ByteBuffer buffer = ByteBuffer.allocate(1024);
+ * 这种方式是直接分配内存，与操作系统的耦合性更高，速度比上面的要更快，但是分配的开销更大
+ * ByteBuffer byteBuffer1 = ByteBuffer.allocateDirect(1024);
  *
+ * byte[] bytes = new byte[]{12,34,56};
+ * ByteBuffer byteBuffer2 = ByteBuffer.wrap(bytes);
+ *
+ *
+ * Buffer的类型包括了所有的基本数据类型，一般ByteBuffer比较常用，其他数据类型的用法也都是差不多的。
+ * ByteBuffer可以通过asXXXBuffer()进行转换成其他类型的Buffer，例如：
+ * IntBuffer intBuffer = byteBuffer.asIntBuffer();
  *
  *
  */
@@ -286,8 +299,10 @@ public abstract class Buffer {
     // 如果将position的值设的比mark小，当前的mark值会被抛弃掉。这些属性总是满足以下条件：
     private int mark = -1;//标记位置，reset时需要
     //读/写操作的当前下标。当使用buffer的相对位置进行读/写操作时，读/写会从这个下标进行，并在操作完成后，buffer会更新下标的值。
+    //// 指向下一个字节放到数组的哪一个元素中。假设从通道读取3个字节到数组，那么position=3，指向的是数组的第4个元素，写也是一样
     private int position = 0;
     //在Buffer上进行的读写操作都不能越过这个下标。当写数据到buffer中时，limit一般和capacity相等，当读数据时，limit代表buffer中有效数据的长度。
+    //limit在读时表示还有多少数据需要取出，写时表示还有多少空间可以写入，position<=limit
     private int limit;
     //这个Buffer最多能放多少数据。capacity一般在buffer被创建的时候指定。
     private int capacity;

@@ -59,6 +59,11 @@ import java.io.Closeable;
  * @since 1.4
  */
 
+/**
+ * Channel是一个对象，我们对数据的读写都不会直接与Channel接触，而是通过中间的缓冲区buffer。Channel在NIO中就像是Stream在传统IO中，
+ * 只不过他们的区别是Channel是双向的（unix模型的底层系统通道也是双向的），可读，可写，可同时读写，而Stream是单向的，一个Stream只能
+ * 是读或者写。
+ */
 public interface Channel extends Closeable {
 
     /**
